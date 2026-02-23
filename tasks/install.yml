@@ -1,8 +1,3 @@
-# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2024 Nikita Chernyi
-#
-# SPDX-License-Identifier: AGPL-3.0-or-later
-
 ---
 
 - name: Ensure exim-relay base path exists
@@ -74,21 +69,21 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else exim_relay_container_image_force_pull }}"
   when: "not exim_relay_container_image_self_build | bool"
   register: exim_relay_container_image_pull_result
-  retries: "{{ devture_playbook_help_container_retries_count }}"
-  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  retries: "{{ container_retry }}"
+  delay: "{{ container_retry_delay }}"
   until: exim_relay_container_image_pull_result is not failed
 
 - name: Ensure exim-relay container network is created
   community.general.docker_network:
-    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    enable_ipv6: "{{ sysd_docker_ipv6_enabled }}"
     name: "{{ exim_relay_container_network }}"
     driver: bridge
-    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+    driver_options: "{{ sysd_docker_net_driver_opts }}"
 
 - name: Ensure exim-relay.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/exim-relay.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ exim_relay_identifier }}.service"
+    dest: "{{ sysd_docker_service_path }}/{{ exim_relay_identifier }}.service"
     mode: 0644
   register: exim_relay_systemd_service_result
 

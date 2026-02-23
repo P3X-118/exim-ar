@@ -20,13 +20,13 @@ DefaultDependencies=no
 
 [Service]
 Type=simple
-Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ exim_relay_identifier }} 2>/dev/null || true'
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ exim_relay_identifier }} 2>/dev/null || true'
+Environment="HOME={{ sysd_docker_unit_home_path }}"
+ExecStartPre=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} stop -t {{ sysd_docker_stop_grace }} {{ exim_relay_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} rm {{ exim_relay_identifier }} 2>/dev/null || true'
 
 # --hostname gives us a friendlier hostname than the default.
 # The real hostname that gets used for delivery is passed to Exim via a `HOSTNAME` environment variable though.
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+ExecStartPre={{ sysd_docker_host_command }} create \
 			--rm \
 			--name={{ exim_relay_identifier }} \
 			--log-driver=none \
@@ -46,13 +46,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ exim_relay_container_image }}
 
 {% for network in exim_relay_container_additional_networks %}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ exim_relay_identifier }}
+ExecStartPre={{ sysd_docker_host_command }} network connect {{ network }} {{ exim_relay_identifier }}
 {% endfor %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ exim_relay_identifier }}
+ExecStart={{ sysd_docker_host_command }} start --attach {{ exim_relay_identifier }}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ exim_relay_identifier }} 2>/dev/null || true'
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ exim_relay_identifier }} 2>/dev/null || true'
+ExecStop=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} stop -t {{ sysd_docker_stop_grace }} {{ exim_relay_identifier }} 2>/dev/null || true'
+ExecStop=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} rm {{ exim_relay_identifier }} 2>/dev/null || true'
 Restart=always
 RestartSec=30
 SyslogIdentifier={{ exim_relay_identifier }}

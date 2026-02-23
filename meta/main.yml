@@ -1,8 +1,8 @@
 galaxy_info:
-  author: Slavi Pantaleev
-  company: Devture Ltd
+  author: Oneill
+  company: SGC
   role_name: exim-relay
-  namespace: devture
+  namespace: P3X-118
   description: exim-relay SMTP server
   platforms:
     - name: Debian
